@@ -7,6 +7,10 @@ The project uses the [Qafox](https://tutorialsninja.com/demo/) website for autom
 ### Repository Structure
 ```
 features
+  pages
+    __init__.py
+    login_page.py
+    ...
   steps
     __init__.py
     login.py
@@ -14,7 +18,7 @@ features
   __init__.py
   login.feature
   ...
-config.ini
+utils.py
 requirements.txt
 README.md
 .gitignore
