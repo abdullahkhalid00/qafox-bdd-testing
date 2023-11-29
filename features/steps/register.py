@@ -1,114 +1,127 @@
-from datetime import datetime
-
+import utils
 from behave import given, when, then
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+from features.pages.home_page import HomePage
 
 
 @given(u'the user is on the registration page')
 def step_impl(context):
-    context.driver = webdriver.Chrome()
-    context.driver.maximize_window()
-    context.driver.get('https://tutorialsninja.com/demo/')
-    context.driver.find_element(By.XPATH, "//*[@id='top-links']/ul/li[2]/a").click()
-    context.driver.find_element(By.LINK_TEXT, 'Register').click()
+    utils.set_driver_config(context)
+    context.home_page = HomePage(context.driver)
+    context.home_page.click_on_my_account_option()
+    context.register_page = context.home_page.click_on_register_option()
 
 
 @when(u'the user enters the firstname as \'ABC\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-firstname').send_keys('ABC')
+    context.register_page.enter_first_name('ABC')
 
 
 @when(u'the user enters the lastname as \'XYZ\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-lastname').send_keys('XYZ')
+    context.register_page.enter_last_name('XYZ')
 
 
 @when("the user enters the email")
 def step_impl(context):
-    time_stamp = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    context.driver.find_element(By.ID, 'input-email').send_keys('abc' + time_stamp + '@abc.com')
+    context.register_page.enter_email()
 
 
 @when(u'the user enters the telephone number as \'12345\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-telephone').send_keys('12345')
+    context.register_page.enter_telephone('12345')
 
 
 @when(u'the user enters the password as \'ABCXYZ\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-password').send_keys('ABCXYZ')
-    context.driver.find_element(By.ID, 'input-confirm').send_keys('ABCXYZ')
+    context.register_page.enter_password('ABCXYZ')
+    context.register_page.confirm_password('ABCXYZ')
 
 
 @when(u'the user checks the privacy policy option')
 def step_impl(context):
-    context.driver.find_element(By.NAME, 'agree').click()
+    context.register_page.check_privacy_policy_option()
 
 
 @when(u'the user clicks on the continue button')
 def step_impl(context):
-    context.driver.find_element(By.XPATH, "//input[@value='Continue']").click()
+    context.account_created_page = context.register_page.click_on_continue_button()
 
 
 @then("the user is registered")
 def step_impl(context):
-    expected_output = 'Your Account Has Been Created!'
-    assert context.driver.find_element(By.XPATH, "//div[@id='content']/h1").text.__eq__(expected_output)
+    assert context.account_created_page.display_status_of_your_account_has_been_created_header('Your Account Has Been Created!')
+
+
+@when(u'the user enters the registration email as \'\'')
+def step_impl(context):
+    context.register_page.leave_email_blank()
+
+
+@when(u'the user enters the registration email as \'y2k@y2k.com\'')
+def step_impl(context):
+    context.register_page.enter_duplicate_email('y2k@y2k.com')
+
+
+@when(u'the user enters the registration password as \'\'')
+def step_impl(context):
+    context.register_page.enter_password('')
 
 
 @then(u'a \'Warning: E-Mail Address is already registered!\' is displayed')
 def step_impl(context):
-    warning_message = 'Warning: E-Mail Address is already registered!'
-    assert context.driver.find_element(By.XPATH, "//div[@id='account-register']/div[1]").text.__eq__(warning_message)
+    assert context.register_page.display_status_of_email_address_already_registered_text_message('Warning: E-Mail Address is already registered!')
 
 
 @when(u'the user enters the firstname as \'\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-firstname').send_keys('')
+    context.register_page.enter_first_name('')
 
 
 @when(u'the user enters the lastname as \'\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-lastname').send_keys('')
+    context.register_page.enter_last_name('')
 
 
 @when(u'the user enters the telephone number as \'1\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-telephone').send_keys('1')
+    context.register_page.enter_telephone('1')
 
 
 @then(u'a \'Telephone must be between 3 and 32 characters!\' is displayed')
 def step_impl(context):
-    telephone_warning_message = 'Telephone must be between 3 and 32 characters!'
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-telephone']/following-sibling::div").text.__eq__(telephone_warning_message)
+    assert context.register_page.display_status_of_telephone_number_must_be_between_3_and_32_characters_text_message('Telephone must be between 3 and 32 characters!')
 
 
 @when(u'the user enters the telephone number as \'\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-telephone').send_keys('')
+    context.register_page.enter_telephone('')
 
 
-@when(u'the user enters the password as \'ABC\'')
+@when(u'the user enters the registration password as \'ABCXYZ\'')
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-password').send_keys('ABC')
-    context.driver.find_element(By.ID, 'input-confirm').send_keys('ABC')
+    context.register_page.enter_password('ABCXYZ')
+    context.register_page.confirm_password('ABCXYZ')
+
+
+@when(u'the user enters the registration password as \'ABC\'')
+def step_impl(context):
+    context.register_page.enter_password('ABC')
+    context.register_page.confirm_password('ABC')
 
 
 @then(u'a \'Password must be between 4 and 20 characters!\' is displayed')
 def step_impl(context):
-    password_warning_message = 'Password must be between 4 and 20 characters!'
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-password']/following-sibling::div").text.__eq__(password_warning_message)
+    assert context.register_page.display_status_of_password_must_be_between_4_and_20_characters_text_message('Password must be between 4 and 20 characters!')
 
 
 @when("the user leaves every field blank")
 def step_impl(context):
-    context.driver.find_element(By.ID, 'input-firstname').send_keys('')
-    context.driver.find_element(By.ID, 'input-lastname').send_keys('')
-    context.driver.find_element(By.ID, 'input-email').send_keys('')
-    context.driver.find_element(By.ID, 'input-telephone').send_keys('')
-    context.driver.find_element(By.ID, 'input-password').send_keys('')
-    context.driver.find_element(By.ID, 'input-confirm').send_keys('')
+    context.register_page.enter_first_name('')
+    context.register_page.enter_last_name('')
+    context.register_page.leave_email_blank()
+    context.register_page.enter_telephone('')
+    context.register_page.enter_password('')
+    context.register_page.confirm_password('')
 
 
 @then("a proper warning message for each field is displayed")
@@ -119,10 +132,10 @@ def step_impl(context):
     email_warning_message = 'E-Mail Address does not appear to be valid!'
     telephone_warning_message = 'Telephone must be between 3 and 32 characters!'
     password_warning_message = 'Password must be between 4 and 20 characters!'
-    assert context.driver.find_element(By.XPATH, "//div[@id='account-register']/div[1]").text.__contains__(privacy_policy_warning_message)
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-firstname']/following-sibling::div").text.__eq__(first_name_warning_message)
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-lastname']/following-sibling::div").text.__eq__(last_name_warning_message)
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-email']/following-sibling::div").text.__eq__(email_warning_message)
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-telephone']/following-sibling::div").text.__eq__(telephone_warning_message)
-    assert context.driver.find_element(By.XPATH, "//input[@id='input-password']/following-sibling::div").text.__eq__(password_warning_message)
-    context.driver.quit()
+    assert context.register_page.display_status_of_you_must_agree_to_the_privacy_policy_text_message(privacy_policy_warning_message)
+    assert context.register_page.display_status_of_first_name_must_be_between_1_and_32_characters_text_message(first_name_warning_message)
+    assert context.register_page.display_status_of_last_name_must_be_between_1_and_32_characters_text_message(last_name_warning_message)
+    assert context.register_page.display_status_of_email_does_not_appear_to_be_valid_text_message(email_warning_message)
+    assert context.register_page.display_status_of_telephone_number_must_be_between_3_and_32_characters_text_message(telephone_warning_message)
+    assert context.register_page.display_status_of_password_must_be_between_4_and_20_characters_text_message(password_warning_message)
+    utils.quit_driver(context)
