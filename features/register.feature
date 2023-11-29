@@ -22,8 +22,8 @@ Feature: User registration
     When the user enters the firstname as '<firstname>'
     And the user enters the lastname as '<lastname>'
     And the user enters the telephone number as '<telephonenumber>'
-    And the user enters the email as '<email>'
-    And the user enters the password as '<password>'
+    And the user enters the registration email as '<email>'
+    And the user enters the registration password as '<password>'
     And the user checks the privacy policy option
     And the user clicks on the continue button
     Then a '<warningmessage>' is displayed
